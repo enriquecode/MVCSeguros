@@ -1,0 +1,11 @@
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\bin\Debug\netcoreapp2.0\MVCSeguros.deps.json
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\bin\Debug\netcoreapp2.0\MVCSeguros.runtimeconfig.json
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\bin\Debug\netcoreapp2.0\MVCSeguros.runtimeconfig.dev.json
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\bin\Debug\netcoreapp2.0\MVCSeguros.dll
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\bin\Debug\netcoreapp2.0\MVCSeguros.pdb
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\obj\Debug\netcoreapp2.0\MVCSeguros.csprojAssemblyReference.cache
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\obj\Debug\netcoreapp2.0\MVCSeguros.csproj.CoreCompileInputs.cache
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\obj\Debug\netcoreapp2.0\MVCSeguros.AssemblyInfoInputs.cache
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\obj\Debug\netcoreapp2.0\MVCSeguros.AssemblyInfo.cs
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\obj\Debug\netcoreapp2.0\MVCSeguros.dll
+C:\Users\casti\source\repos\MVCSeguros\MVCSeguros\obj\Debug\netcoreapp2.0\MVCSeguros.pdb

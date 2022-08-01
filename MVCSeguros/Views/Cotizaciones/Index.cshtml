@@ -1,0 +1,262 @@
+﻿@*@model MVCSeguros.Models.Descripcion*@
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Cotizar", "Cotizaciones", FormMethod.Post, new { onsubmit = "return SubmitForm()" }))
+{
+    @*@using (Html.BeginForm())
+        {*@
+    <h1 class="text-center">Cotizaciones</h1>
+
+    @*<div class="container" style="flex: 1 1 100%;">*@
+    @*<div class="container" style="width: 60%;  float: left;">*@
+    <div class="form-group" style="width: 50%; float: left;">
+        <p class="fs-4 fw-bold text-center mt-0 mb-3">Vehículo</p>
+
+        <label for="dropDownMarcas" style="margin-top:5px;">Marca:</label>
+        <select class="form-control" id="dropDownMarcas"></select>
+
+        <label for="dropDownSubMarcas" style="margin-top:5px;">Sub Marca:</label>
+        <select class="form-control" id="dropDownSubMarcas"></select>
+
+        <label for="dropDownModelos" style="margin-top:5px;">Modelo:</label>
+        <select class="form-control" id="dropDownModelos"></select>
+
+        <label for="dropDownDescripciones" style="margin-top:5px;">Descripción:</label>
+        <select class="form-control" id="dropDownDescripciones"></select>
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.DescripcionId, new { @class = "control-label" })
+                @Html.EditorFor(model => model.DescripcionId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DescripcionId)
+            </div>*@
+
+
+        @*</div>
+
+            <div class="form-group" style="width: 50%; float: left;">*@
+        <div style="margin-top:5%;">
+            <p class="fs-4 fw-bold text-center mt-0 mb-3">Domicilio</p>
+
+            <label for="txtCodigoPostal">Código Postal:</label>
+            <input id="txtCodigoPostal" type="number" class="form-control" placeholder="Código postal ...">
+
+            <label for="txtEntidad" class="form-label">Estado:</label>
+            <input type="text" class="form-control" id="txtEntidad" placeholder="Entidad..." readonly="readonly">
+
+            <label for="txtMunicipio" class="form-label">Municipio:</label>
+            <input type="text" class="form-control" id="txtMunicipio" placeholder="Municipio ..." readonly="readonly">
+
+            <label for="dropDownColonias" style="margin-top:5px;">Colonia:</label>
+            <select class="form-control" id="dropDownColonias"></select>
+        </div>
+
+        <div class="mt-3" style="margin-top:7%; text-align:center">
+            <button type="submit" class="btn btn-primary d-block btn-lg mx-auto">Cotizar</button>
+        </div>
+    </div>
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $.ajax({
+            type: 'GET',
+            url: '/Seguros/Catalogos/ObtenerMarcas',
+            success: function (result) {
+                console.log(result.data);
+                $("#dropDownMarcas").empty();
+                $("#dropDownMarcas").append("<option value='0'>Selecciona una marca</option>");
+                $.each(result.data, function (index, optiondata) {
+                    $("#dropDownMarcas").append("<option value='" + optiondata.marcaId + "'>" + optiondata.marcaDescripcion + "</option>");
+                    //$("#dropDownMarcas").append("<option value='1'>" + optiondata.marca1 + "</option>");
+                });
+            }
+        });
+
+    });
+
+    $(function () {
+        $("#dropDownMarcas").change(function (event) {
+
+            if ($("#dropDownMarcas").val() != "0") {
+
+                $.ajax({
+                    url: "/Seguros/Catalogos/ObtenerSubMarcas/",
+                    type: 'GET',
+                    data: { MarcaId: $("#dropDownMarcas").val() },
+                    success: function (result) {
+                        console.log(result.data);
+                        $("#dropDownSubMarcas").empty();
+                        $("#dropDownSubMarcas").append("<option value='0'>Selecciona una SubMarca</option>");
+                        $.each(result.data, function (index, optiondata) {
+                            $("#dropDownSubMarcas").append("<option value='" + optiondata.subMarcaId + "'>" + optiondata.subMarcaDescripcion + "</option>");
+                        });
+                    },
+                    error: function (xhr) {
+                        alert("Hubo un error");
+                    }
+                });
+            }
+        });
+    });
+
+    $(function () {
+        $("#dropDownSubMarcas").change(function (event) {
+
+            if ($("#dropDownSubMarcas").val() != "0") {
+
+                $.ajax({
+                    url: "/Seguros/Catalogos/ObtenerModelos/",
+                    type: 'GET',
+                    data: { SubMarcaId: $("#dropDownSubMarcas").val() },
+                    success: function (result) {
+                        console.log(result.data);
+                        $("#dropDownModelos").empty();
+                        $("#dropDownModelos").append("<option value='0'>Selecciona un Modelo</option>");
+                        $.each(result.data, function (index, optiondata) {
+                            $("#dropDownModelos").append("<option value='" + optiondata.modeloId + "'>" + optiondata.ano + "</option>");
+                        });
+                    },
+                    error: function (xhr) {
+                        alert("Hubo un error");
+                    }
+                });
+            }
+        });
+    });
+
+    $(function () {
+        $("#dropDownModelos").change(function (event) {
+
+            if ($("#dropDownModelos").val() != "0") {
+
+                $.ajax({
+                    url: "/Seguros/Catalogos/ObtenerDescripciones/",
+                    type: 'GET',
+                    data: { ModeloId: $("#dropDownModelos").val() },
+                    success: function (result) {
+                        console.log(result.data);
+                        $("#dropDownDescripciones").empty();
+                        $("#dropDownDescripciones").append("<option value='0'>Selecciona una Descripción</option>");
+                        $.each(result.data, function (index, optiondata) {
+                            $("#dropDownDescripciones").append("<option value='" + optiondata.descripcionId + "'>" + optiondata.descripcionDetallada + "</option>");
+                        });
+                    },
+                    error: function (xhr) {
+                        alert("Hubo un error");
+                    }
+                });
+            }
+        });
+    });
+
+    $(function () {
+        $("#txtCodigoPostal").change(function () {
+            if ($("#txtCodigoPostal").val().length == 5) {
+
+                ////Metodo 1, con catalgos ubicaciones geograficas creadas localmente
+                $.ajax({
+                    url: "/Seguros/Catalogos/ObtenerUbicacionesGeograficas/",
+                    type: 'GET',
+                    data: { CodigoPostalNumero: $("#txtCodigoPostal").val() },
+                    success: function (result) {
+                        console.log(result.data);
+                        if (result.data.length > 0) {
+                            $("#txtEntidad").val(result.data[0].entidadNombre);
+                            $("#txtMunicipio").val(result.data[0].municipioNombre);
+                            $("#dropDownColonias").empty();
+                            $("#dropDownColonias").append("<option value='0'>Selecciona una Colonia</option>");
+                            $.each(result.data, function (index, optiondata) {
+                                $("#dropDownColonias").append("<option value='" + optiondata.coloniaId + "'>" + optiondata.coloniaNombre + "</option>");
+                            });
+                        }
+                        else {
+                            $("#txtEntidad").val("");
+                            $("#txtMunicipio").val("");
+                            $("#dropDownColonias").empty();
+                        }
+                    },
+                    error: function (xhr) {
+                        alert("Hubo un error");
+                    }
+                });
+
+                ////Metodo 2, con catalogos de ubicaciones geograficas consultadas en servicio de web.aarco.com.mx
+                //$.ajax({
+                //    url: "/Seguros/Catalogos/ObtenerDomicilio/",
+                //    type: 'GET',
+                //    data: { CodigoPostalNumero: $("#txtCodigoPostal").val() },
+                //    success: function (result) {
+                //        console.log(result.data);
+                //        if (result.data.length > 0) {
+                //            //$("#txtEntidad").val(result.data[0].entidadNombre);
+                //            //$("#txtMunicipio").val(result.data[0].municipioNombre);
+                //            //$("#dropDownColonias").empty();
+                //            //$("#dropDownColonias").append("<option value='0'>Selecciona una Colonia</option>");
+                //            //$.each(result.data, function (index, optiondata) {
+                //            //    $("#dropDownColonias").append("<option value='" + optiondata.coloniaId + "'>" + optiondata.coloniaNombre + "</option>");
+                //            //});
+                //        }
+                //        else {
+                //            $("#txtEntidad").val("");
+                //            $("#txtMunicipio").val("");
+                //            $("#dropDownColonias").empty();
+                //        }
+                //    },
+                //    error: function (xhr) {
+                //        alert("Hubo un error");
+                //    }
+                //});
+
+            }
+            else {
+                //estpo cambiarlo por un modal
+                alert("Debe de capturar un codigo postal de 5 digitos");
+                $("#txtEntidad").val("");
+                $("#txtMunicipio").val("");
+                $("#dropDownColonias").empty();
+            }
+
+        });
+    });
+
+    //function SubmitForm(form) {
+    function SubmitForm() {
+        // $.validator.unobtrusive.parse(form);
+        //if ($(form).valid()) {
+        alert('voy a submite');
+        //console.log(form);
+        $.ajax({
+            type: "POST",
+            //url: form.action,
+            url: "/Seguros/Cotizaciones/Cotizar/",
+            //data: $(form).serialize(),
+            data: { descripcionId: 'ABCS' },
+            success: function (data) {
+
+                if (data.success) {
+                    Popup.dialog('close');
+                    dataTable.ajax.reload();
+
+                    $.notify(data.message, {
+                        globalPosition: "top center",
+                        className: "success"
+                    })
+
+
+                }
+            }
+        });
+        //}
+
+        return false;
+
+    }
+</script>
+
