@@ -57,10 +57,65 @@
             <button type="submit" class="btn btn-primary d-block btn-lg mx-auto">Cotizar</button>
         </div>
     </div>
+
+    <div class="modal fade" id="divModalConfirmacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header"><h5 class="modal-title" id="staticBackdropLabel">Cotización</h5></div><!--!-->
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-evenly flex-wrap">
+                            <div class="p-2 border rounded m-2" id="divAseguradora1" style="display:none;">
+                                <img src="~/images/AXA.png" class="rounded" style="width: 100px; height: auto;" alt="Aseguradora AXA"><!--!-->
+                                <p class="my-0 mt-2 mx-auto fw-bold text-center" id="parrafoAseguradora1"></p>
+                            </div>
+                            <div class="p-2 border rounded m-2" id="divAseguradora2" style="display:none;">
+                                <img src="~/images/ZURICH.png" class="rounded" style="width: 100px; height: auto;" alt="Aseguradora Zurich"><!--!-->
+                                <p class="my-0 mt-2 mx-auto fw-bold text-center" id="parrafoAseguradora2"></p>
+                            </div>
+                            <div class="p-2 border rounded m-2" id="divAseguradora3" style="display:none;">
+                                <img src="~/images/HDI.png" class="rounded" style="width: 100px; height: auto;" alt="Aseguradora HDI"><!--!-->
+                                <p class="my-0 mt-2 mx-auto fw-bold text-center" id="parrafoAseguradora3"></p>
+                            </div>
+                            <div class="p-2 border rounded m-2" id="divAseguradora4" style="display:none;">
+                                <img src="~/images/CHUBB.png" class="rounded" style="width: 100px; height: auto;" alt="Aseguradora CHUBB"><!--!-->
+                                <p class="my-0 mt-2 mx-auto fw-bold text-center" id="parrafoAseguradora4"></p>
+                            </div>
+                            <div class="p-2 border rounded m-2" id="divAseguradora5" style="display:none;">
+                                <img src="~/images/QUALITAS.png" class="rounded" style="width: 100px; height: auto;" alt="Aseguradora Qualitas"><!--!-->
+                                <p class="my-0 mt-2 mx-auto fw-bold text-center" id="parrafoAseguradora5"></p>
+                            </div>
+                        </div><!--!-->
+                        <p class="my-0 mt-3 fw-bold text-center" id="parrafoCotizacionTerminada" style="display:none;">.: Cotización terminada :.</p>
+                    </div><!--!-->
+                    <div class="modal-footer"><button type="button" class="btn btn-primary" onclick="cerrarModal()">Aceptar</button></div>
+                </div>
+            </div>
+        </div>
+
+    @*<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Modal header</h3>
+        </div>
+        <div class="modal-body">
+            <p>One fine body…</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-primary">Save changes</button>
+        </div>
+    </div>*@
 }
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript">
+
+    var descripcionIdGlobal;
+    var peticionFinalizadaGlobal = false;
+    var peticionLlaveGlobal = '';
+    var popUp; 
 
     $(document).ready(function () {
 
@@ -160,7 +215,7 @@
         $("#txtCodigoPostal").change(function () {
             if ($("#txtCodigoPostal").val().length == 5) {
 
-                ////Metodo 1, con catalgos ubicaciones geograficas creadas localmente
+                ////Metodo 1, con catalogos ubicaciones geograficas creadas localmente
                 $.ajax({
                     url: "/Seguros/Catalogos/ObtenerUbicacionesGeograficas/",
                     type: 'GET',
@@ -230,27 +285,78 @@
     function SubmitForm() {
         // $.validator.unobtrusive.parse(form);
         //if ($(form).valid()) {
-        alert('voy a submite');
+
+        //se puede agregar una función de validación, para que no se vaya datos vacíos:
+        descripcionIdGlobal = $("#dropDownDescripciones").val()
         //console.log(form);
+
         $.ajax({
             type: "POST",
             //url: form.action,
             url: "/Seguros/Cotizaciones/Cotizar/",
             //data: $(form).serialize(),
-            data: { descripcionId: 'ABCS' },
-            success: function (data) {
+            data: { descripcionId: descripcionIdGlobal },
+            success: function (result) {
+                console.log(result.data);
 
-                if (data.success) {
-                    Popup.dialog('close');
-                    dataTable.ajax.reload();
+                if (result.data != null) {
+                    peticionFinalizadaGlobal = result.data.peticionFinalizada;
+                    peticionLlaveGlobal = result.data.peticionLlave;
+                   // PopUpForm(result.data);
 
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "success"
-                    })
+                    //$('#myMmodal').modal({
+                    //    show: 'true'
+                    //});                     
 
+                    //$("#results").text(result.data);
+                    //$(".modal-body").text(result.data); 
+                    //jQuery.noConflict();
+                    LlenaCotizaciones(result.data);
+                    $("#divModalConfirmacion").modal('show');
+                    //$('#myModal').modal('show');
+                    //$("#parrafoAseguradora1").text('$19099.00');
+                    //$('#my-modal').modal({
+                    //    show: 'true'
+                    //}); 
+                   //ev.preventDefault();
 
                 }
+
+                //console.log(peticionLlaveGlobal);
+                //se puede hacer un ciclo, pero con ir 5 veces, más que suficiente
+                //while (peticionFinalizadaGlobal == false) {
+                if (peticionFinalizadaGlobal == false) {
+                    ajaxCall2(peticionLlaveGlobal, descripcionIdGlobal);
+                }
+                //else {
+                //    return false;
+                //}
+
+                //    $.ajax({
+                //        type: "POST",
+                //        //url: form.action,
+                //        url: "/Seguros/Cotizaciones/Cotizar/",
+                //        //data: $(form).serialize(),
+                //        data: { descripcionId: descripcionIdGlobal },
+                //        success: function (result) {
+                //            console.log(result.data);
+                //            peticionFinalizadaGlobal = result.data.peticionFinalizada;
+
+
+                //        }
+                //    });
+                //}
+                //if (data.success) {
+                //    Popup.dialog('close');
+                //    dataTable.ajax.reload();
+
+                //    $.notify(data.message, {
+                //        globalPosition: "top center",
+                //        className: "success"
+                //    })
+
+
+                //}
             }
         });
         //}
@@ -258,5 +364,130 @@
         return false;
 
     }
+
+    function ajaxCall2(peticionLlave, descripcionId) {
+        $.ajax({
+            type: "POST",
+            //url: form.action,
+            url: "/Seguros/Cotizaciones/Cotizar2/",
+            //data: $(form).serialize(),
+            data: { peticionLlave: peticionLlave, descripcionId: descripcionId },
+            success: function (result) {
+                console.log('la segunda vez');
+                console.log(result.data);
+                if (result.data != null) {
+                    peticionFinalizadaGlobal = result.data.peticionFinalizada;
+                    peticionLlaveGlobal = result.data.peticionLlave
+                    LlenaCotizaciones(result.data);
+                }
+                console.log(peticionLlaveGlobal);
+
+                //se puede hacer un ciclo, pero con ir 5 veces, más que suficiente
+                //while (peticionFinalizadaGlobal == false) {
+                if (peticionFinalizadaGlobal == false) {
+                    ajaxCall3(peticionLlaveGlobal, descripcionIdGlobal);
+                }
+
+            }
+        });
+
+        return false;
+    }
+
+    function ajaxCall3(peticionLlave, descripcionId) {
+        $.ajax({
+            type: "POST",
+            //url: form.action,
+            url: "/Seguros/Cotizaciones/Cotizar2/",
+            //data: $(form).serialize(),
+            data: { peticionLlave: peticionLlave, descripcionId: descripcionId },
+            success: function (result) {
+                console.log('la tercera vez');
+                console.log(result.data);
+                if (result.data != null) {
+                    peticionFinalizadaGlobal = result.data.peticionFinalizada;
+                    peticionLlaveGlobal = result.data.peticionLlave
+                    LlenaCotizaciones(result.data);
+                }
+
+                console.log(peticionLlaveGlobal);
+
+                if (peticionFinalizadaGlobal == false) {
+                    ajaxCall2(peticionLlaveGlobal, descripcionIdGlobal);
+                }
+
+                //se puede hacer un ciclo, pero con ir 5 veces, más que suficiente
+                //while (peticionFinalizadaGlobal == false) {
+                //if (peticionFinalizadaGlobal == false) {
+                //    ajaxCall2();
+                //}
+
+            }
+        });
+
+        return false;
+    }
+
+    function LlenaCotizaciones(responseData) {
+        for (i = 0; i < responseData.aseguradoras.length; i++) {
+
+            var peticionAseguradora = responseData.aseguradoras[i];
+            //console.log(peticionAseguradora);
+
+            //console.log(peticionAseguradora.tarifa);
+            var divAMostrar = "#divAseguradora" + (i + 1);
+            var parrafoAMostrar = "#parrafoAseguradora" + (i + 1);
+            console.log(divAMostrar);
+            console.log('voy a mostrar si esta visible');
+            console.log($(divAMostrar).is(":visible"));
+            //$(divAMostrar).css('display') == 'block';
+            //console.log($(divAMostrar).css('display'))
+            //if ($(divAMostrar).css('display') == 'none') {
+            //if ($(parrafoAMostrar.val() = '')) {
+            if (!$(divAMostrar).is(":visible")) {
+                var tarifa = "$" + peticionAseguradora.tarifa;
+                $(parrafoAMostrar).text(tarifa);
+                //$(divAMostrar).css('display') == 'block';
+                //$(divAMostrar + ':visible').animate({ left: '+=10px' }, 'slow');
+                //$(divAMostrar).css("display", "block")
+                //$(divAMostrar).show()
+                $(divAMostrar).removeAttr("style");
+            }
+            if (i == 4) {
+                $("#parrafoCotizacionTerminada").removeAttr("style");
+            }
+
+
+        }
+        //$("#parrafoAseguradora1").text('$19099.00');
+    }
+
+    function cerrarModal() {
+        $("#divModalConfirmacion").modal('hide');
+    }
+
+    function PopUpForm(responseData) {
+
+        var formDiv = $('<div/>');
+
+
+
+        formDiv.html(responseData);
+
+        //Popup = formDiv.dialog({
+        //    autoOpen: true,
+        //    resizable: false,
+        //    title: "Llenar",
+        //    height: 625,
+        //    width: 750,
+        //    close: function () {
+        //        Popup.dialog('destroy').remove();
+        //    }
+
+        //});
+    }
+
+    
+
 </script>
 
